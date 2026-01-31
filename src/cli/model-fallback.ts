@@ -13,7 +13,8 @@ interface ProviderAvailability {
   }
   opencodeZen: boolean
   copilot: boolean
-  zai: boolean
+  zaiCodingPlan: boolean
+  zhipuAi: boolean
   kimiForCoding: boolean
   isMaxPlan: boolean
 }
@@ -35,7 +36,8 @@ export interface GeneratedOmoConfig {
   [key: string]: unknown
 }
 
-const ZAI_MODEL = "zai-coding-plan/glm-4.7"
+const ZAI_CODING_PLAN_MODEL = "zai-coding-plan/glm-4.7"
+const ZHIPU_AI_MODEL = "zhipu-ai/glm-4.7"
 
 const ULTIMATE_FALLBACK = "opencode/glm-4.7-free"
 const SCHEMA_URL = "https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/master/assets/oh-my-opencode.schema.json"
@@ -49,7 +51,8 @@ function toProviderAvailability(config: InstallConfig): ProviderAvailability {
     },
     opencodeZen: config.hasOpencodeZen,
     copilot: config.hasCopilot,
-    zai: config.hasZaiCodingPlan,
+    zaiCodingPlan: config.hasZaiCodingPlan,
+    zhipuAi: config.hasZhipuAi,
     kimiForCoding: config.hasKimiForCoding,
     isMaxPlan: config.isMax20,
   }
@@ -62,7 +65,8 @@ function isProviderAvailable(provider: string, avail: ProviderAvailability): boo
     google: avail.native.gemini,
     "github-copilot": avail.copilot,
     opencode: avail.opencodeZen,
-    "zai-coding-plan": avail.zai,
+    "zai-coding-plan": avail.zaiCodingPlan,
+    "zhipu-ai": avail.zhipuAi,
     "kimi-for-coding": avail.kimiForCoding,
   }
   return mapping[provider] ?? false
@@ -120,7 +124,8 @@ export function generateModelConfig(config: InstallConfig): GeneratedOmoConfig {
     avail.native.gemini ||
     avail.opencodeZen ||
     avail.copilot ||
-    avail.zai ||
+    avail.zaiCodingPlan ||
+    avail.zhipuAi ||
     avail.kimiForCoding
 
   if (!hasAnyProvider) {
@@ -140,8 +145,8 @@ export function generateModelConfig(config: InstallConfig): GeneratedOmoConfig {
 
   for (const [role, req] of Object.entries(AGENT_MODEL_REQUIREMENTS)) {
     // Special case: librarian always uses ZAI first if available
-    if (role === "librarian" && avail.zai) {
-      agents[role] = { model: ZAI_MODEL }
+    if (role === "librarian" && (avail.zaiCodingPlan || avail.zhipuAi)) {
+      agents[role] = { model: avail.zhipuAi ? ZHIPU_AI_MODEL : ZAI_CODING_PLAN_MODEL }
       continue
     }
 

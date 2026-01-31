@@ -30,6 +30,7 @@ program
   .option("--copilot <value>", "GitHub Copilot subscription: no, yes")
   .option("--opencode-zen <value>", "OpenCode Zen access: no, yes (default: no)")
   .option("--zai-coding-plan <value>", "Z.ai Coding Plan subscription: no, yes (default: no)")
+  .option("--zhipu-ai <value>", "Zhipu AI (智谱 AI) subscription: no, yes (default: no)")
   .option("--kimi-for-coding <value>", "Kimi For Coding subscription: no, yes (default: no)")
   .option("--skip-auth", "Skip authentication setup hints")
   .addHelpText("after", `
@@ -45,6 +46,7 @@ Model Providers (Priority: Native > Copilot > OpenCode Zen > Z.ai > Kimi):
   Copilot       github-copilot/ models (fallback)
   OpenCode Zen  opencode/ models (opencode/claude-opus-4-5, etc.)
   Z.ai          zai-coding-plan/glm-4.7 (Librarian priority)
+  Zhipu AI      zhipu-ai/glm-4.7 (智谱 AI, for Chinese users)
   Kimi          kimi-for-coding/k2p5 (Sisyphus/Prometheus fallback)
 `)
   .action(async (options) => {
@@ -56,6 +58,7 @@ Model Providers (Priority: Native > Copilot > OpenCode Zen > Z.ai > Kimi):
       copilot: options.copilot,
       opencodeZen: options.opencodeZen,
       zaiCodingPlan: options.zaiCodingPlan,
+      zhipuAi: options.zhipuAi,
       kimiForCoding: options.kimiForCoding,
       skipAuth: options.skipAuth ?? false,
     }

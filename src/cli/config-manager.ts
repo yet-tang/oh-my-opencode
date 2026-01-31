@@ -598,28 +598,29 @@ export function addProviderConfig(config: InstallConfig): ConfigMergeResult {
   }
 }
 
-function detectProvidersFromOmoConfig(): { hasOpenAI: boolean; hasOpencodeZen: boolean; hasZaiCodingPlan: boolean; hasKimiForCoding: boolean } {
+function detectProvidersFromOmoConfig(): { hasOpenAI: boolean; hasOpencodeZen: boolean; hasZaiCodingPlan: boolean; hasZhipuAi: boolean; hasKimiForCoding: boolean } {
   const omoConfigPath = getOmoConfig()
   if (!existsSync(omoConfigPath)) {
-    return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasKimiForCoding: false }
+    return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasZhipuAi: false, hasKimiForCoding: false }
   }
 
   try {
     const content = readFileSync(omoConfigPath, "utf-8")
     const omoConfig = parseJsonc<Record<string, unknown>>(content)
     if (!omoConfig || typeof omoConfig !== "object") {
-      return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasKimiForCoding: false }
+      return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasZhipuAi: false, hasKimiForCoding: false }
     }
 
     const configStr = JSON.stringify(omoConfig)
     const hasOpenAI = configStr.includes('"openai/')
     const hasOpencodeZen = configStr.includes('"opencode/')
     const hasZaiCodingPlan = configStr.includes('"zai-coding-plan/')
+    const hasZhipuAi = configStr.includes('"zhipu-ai/')
     const hasKimiForCoding = configStr.includes('"kimi-for-coding/')
 
-    return { hasOpenAI, hasOpencodeZen, hasZaiCodingPlan, hasKimiForCoding }
+    return { hasOpenAI, hasOpencodeZen, hasZaiCodingPlan, hasZhipuAi, hasKimiForCoding }
   } catch {
-    return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasKimiForCoding: false }
+    return { hasOpenAI: true, hasOpencodeZen: true, hasZaiCodingPlan: false, hasZhipuAi: false, hasKimiForCoding: false }
   }
 }
 
@@ -633,6 +634,7 @@ export function detectCurrentConfig(): DetectedConfig {
     hasCopilot: false,
     hasOpencodeZen: true,
     hasZaiCodingPlan: false,
+    hasZhipuAi: false,
     hasKimiForCoding: false,
   }
 

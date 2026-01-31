@@ -142,6 +142,10 @@ function validateNonTuiArgs(args: InstallArgs): { valid: boolean; errors: string
     errors.push(`Invalid --zai-coding-plan value: ${args.zaiCodingPlan} (expected: no, yes)`)
   }
 
+  if (args.zhipuAi !== undefined && !["no", "yes"].includes(args.zhipuAi)) {
+    errors.push(`Invalid --zhipu-ai value: ${args.zhipuAi} (expected: no, yes)`)
+  }
+
   if (args.kimiForCoding !== undefined && !["no", "yes"].includes(args.kimiForCoding)) {
     errors.push(`Invalid --kimi-for-coding value: ${args.kimiForCoding} (expected: no, yes)`)
   }
@@ -158,11 +162,12 @@ function argsToConfig(args: InstallArgs): InstallConfig {
     hasCopilot: args.copilot === "yes",
     hasOpencodeZen: args.opencodeZen === "yes",
     hasZaiCodingPlan: args.zaiCodingPlan === "yes",
+    hasZhipuAi: args.zhipuAi === "yes",
     hasKimiForCoding: args.kimiForCoding === "yes",
   }
 }
 
-function detectedToInitialValues(detected: DetectedConfig): { claude: ClaudeSubscription; openai: BooleanArg; gemini: BooleanArg; copilot: BooleanArg; opencodeZen: BooleanArg; zaiCodingPlan: BooleanArg; kimiForCoding: BooleanArg } {
+function detectedToInitialValues(detected: DetectedConfig): { claude: ClaudeSubscription; openai: BooleanArg; gemini: BooleanArg; copilot: BooleanArg; opencodeZen: BooleanArg; zaiCodingPlan: BooleanArg; zhipuAi: BooleanArg; kimiForCoding: BooleanArg } {
   let claude: ClaudeSubscription = "no"
   if (detected.hasClaude) {
     claude = detected.isMax20 ? "max20" : "yes"
@@ -175,6 +180,7 @@ function detectedToInitialValues(detected: DetectedConfig): { claude: ClaudeSubs
     copilot: detected.hasCopilot ? "yes" : "no",
     opencodeZen: detected.hasOpencodeZen ? "yes" : "no",
     zaiCodingPlan: detected.hasZaiCodingPlan ? "yes" : "no",
+    zhipuAi: detected.hasZhipuAi ? "yes" : "no",
     kimiForCoding: detected.hasKimiForCoding ? "yes" : "no",
   }
 }
@@ -267,6 +273,20 @@ async function runTuiMode(detected: DetectedConfig): Promise<InstallConfig | nul
     return null
   }
 
+  const zhipuAi = await p.select({
+    message: "Do you have a Zhipu AI (智谱 AI) subscription?",
+    options: [
+      { value: "no" as const, label: "No", hint: "Will use other configured providers" },
+      { value: "yes" as const, label: "Yes", hint: "Zhipu AI GLM-4.7 for Chinese users" },
+    ],
+    initialValue: initial.zhipuAi,
+  })
+
+  if (p.isCancel(zhipuAi)) {
+    p.cancel("Installation cancelled.")
+    return null
+  }
+
   const kimiForCoding = await p.select({
     message: "Do you have a Kimi For Coding subscription?",
     options: [
@@ -289,6 +309,7 @@ async function runTuiMode(detected: DetectedConfig): Promise<InstallConfig | nul
     hasCopilot: copilot === "yes",
     hasOpencodeZen: opencodeZen === "yes",
     hasZaiCodingPlan: zaiCodingPlan === "yes",
+    hasZhipuAi: zhipuAi === "yes",
     hasKimiForCoding: kimiForCoding === "yes",
   }
 }

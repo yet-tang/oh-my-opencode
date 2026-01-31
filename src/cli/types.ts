@@ -9,6 +9,7 @@ export interface InstallArgs {
   copilot?: BooleanArg
   opencodeZen?: BooleanArg
   zaiCodingPlan?: BooleanArg
+  zhipuAi?: BooleanArg
   kimiForCoding?: BooleanArg
   skipAuth?: boolean
 }
@@ -21,6 +22,7 @@ export interface InstallConfig {
   hasCopilot: boolean
   hasOpencodeZen: boolean
   hasZaiCodingPlan: boolean
+  hasZhipuAi: boolean
   hasKimiForCoding: boolean
 }
 
@@ -39,5 +41,6 @@ export interface DetectedConfig {
   hasCopilot: boolean
   hasOpencodeZen: boolean
   hasZaiCodingPlan: boolean
+  hasZhipuAi: boolean
   hasKimiForCoding: boolean
 }

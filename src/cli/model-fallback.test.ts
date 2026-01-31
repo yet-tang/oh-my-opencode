@@ -12,6 +12,7 @@ function createConfig(overrides: Partial<InstallConfig> = {}): InstallConfig {
     hasCopilot: false,
     hasOpencodeZen: false,
     hasZaiCodingPlan: false,
+    hasZhipuAi: false,
     hasKimiForCoding: false,
     ...overrides,
   }
